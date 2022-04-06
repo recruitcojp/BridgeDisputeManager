@@ -9,6 +9,7 @@ module.exports = function(deployer, network, accounts) {
   deployer.then(async() => {
     if (network == "development") {
       await deployer.deploy(RLPDecoder);
+      await deployer.deploy(TestCheckPointManager);
       await deployer.link(RLPDecoder, BridgeDisputeManager);
       await deployer.link(RLPDecoder, DisputeHelper);
       await deployer.deploy(TestToken, accounts[0]);
