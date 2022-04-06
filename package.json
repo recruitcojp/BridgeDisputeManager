@@ -1,0 +1,27 @@
+{
+  "name": "bridgedisputemanager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://recruitcojp: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@github.com/recruitcojp/BridgeDisputeManager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/recruitcojp/BridgeDisputeManager/issues"
+  },
+  "homepage": "https://github.com/recruitcojp/BridgeDisputeManager#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "@truffle/hdwallet-provider": "^2.0.4",
+    "dotenv": "^16.0.0"
+  }
+}
