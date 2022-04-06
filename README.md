@@ -20,4 +20,7 @@ The contract provides several functions to validate transactions.
 2. `npm install`
 3. `npm install -g truffle ganache-cli` installed globally for the dev envirnoment
 4. `ganache-cli` run in a background process or seperate terminal window.
-4. `truffle compile && truffle test`
+5. `truffle compile && truffle test`
+
+# License
+The source code is licensed MIT.
