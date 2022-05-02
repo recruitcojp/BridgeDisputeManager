@@ -45,6 +45,40 @@ module.exports = {
       port: 8545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
      },
+	   mumbai: {
+      provider: function() {
+        return new HDWalletProvider(
+          process.env.MNEMONIC,
+          process.env.PROVIDER_MUMBAI,
+          0,
+          4,
+        );
+      },
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      gas: 4500000,
+      //gasPrice: 10000000000,
+      chainId: 80001
+     },
+	   polygon: {
+      provider: function() {
+        return new HDWalletProvider(
+          process.env.MNEMONIC,
+          process.env.PROVIDER_POLYGON,
+          0,
+          4,
+        );
+      },
+      network_id: 137,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+      gas: 4500000,
+      //gasPrice: 40000000000,
+      chainId:137 
+     },
 
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
