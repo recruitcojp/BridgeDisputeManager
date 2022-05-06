@@ -107,7 +107,7 @@ contract("BridgeDisputeManager", function (/* accounts */) {
     }
   });
 
-  it("checkProof", async function () {
+  it("verifyProof", async function () {
 
     const txHash = "0x87408fdb8cab715a54fef2f4fcade724a2ab8af0514ad87e4dfba605142048bf";
     const proof = [
@@ -118,12 +118,12 @@ contract("BridgeDisputeManager", function (/* accounts */) {
     const txRoot = "0x3087644bce2559e711ec1c30b3620e68b3178114354c373a4d5c32120c4287f4";
     const path = [ 1, 13 ];
 
-    const result = await bridgeDisputeManager.checkProof(proof, txRoot, path);
-    assert.equal(txHash, web3.utils.keccak256(result))
+    const result = await bridgeDisputeManager.verifyProof(txHash, proof, txRoot, path);
+    assert.isTrue(result);
 
   });
 
-  it("checkProof wrong root", async function () {
+  it("verifyProof wrong root", async function () {
 
     const txHash = "0x87408fdb8cab715a54fef2f4fcade724a2ab8af0514ad87e4dfba605142048bf";
     const proof = [
@@ -134,7 +134,7 @@ contract("BridgeDisputeManager", function (/* accounts */) {
     const txRoot = "0xf94fdd74f197425dda1eeef534497f407158d845cac9092a5b7fea9681dbb239"; //wrong root
     const path = [ 1, 13 ];
     try {
-      const result = await bridgeDisputeManager.checkProof(proof, txRoot, path);
+      const result = await bridgeDisputeManager.verifyProof(txHash, proof, txRoot, path);
       assert.fail();
     }catch(e) {
       assert.equal(e.message, "Returned error: VM Exception while processing transaction: revert Invalid Tx Root");

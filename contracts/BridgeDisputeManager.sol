@@ -111,7 +111,7 @@ contract BridgeDisputeManager {
       return bytes.concat(prefix, result);
   }
 
-  function checkProof(bytes[] memory proof, bytes memory bytesRoot, uint8[] memory path) public pure returns (bytes memory){
+  function verifyProof(bytes32 txHash, bytes[] memory proof, bytes memory bytesRoot, uint8[] memory path) public pure returns (bool){
       bytes32 root;
       bytes memory tmpRoot = bytesRoot;
       assembly {
@@ -161,7 +161,8 @@ contract BridgeDisputeManager {
               revert();
           }
       }
-      return encodedResult;
+
+      return txHash == keccak256(encodedResult);
   }
 
   function bufferToNibble(bytes memory buffer) internal pure returns(uint8[] memory){
