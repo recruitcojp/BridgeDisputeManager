@@ -11,7 +11,7 @@ The contract provides several functions to validate transactions.
 
 1. `verifyBlockHash(bytes32  blockHash, uint blockNumber) bool` : Verify a blockhash
 2. `verifyTxSignature(address from, bytes[] calldata txRaw) bool` : Verifies if the transaction signature is correct
-3. `checkProof(bytes[] memory proof, bytes memory bytesRoot, uint8[] memory path) bytes memory` : Verifies the mark-proofing of the transaction. The return value is an encoded transaction; EIP 1559 or later is supported.
+3. `verifyProof(bytes32 txHash, bytes[] memory proof, bytes memory bytesRoot, uint8[] memory path) bytes memory` : Verifies the mark-proofing of the transaction. The return value is an encoded transaction; EIP 1559 or later is supported.
 4. `verifyBlockHeader(bytes32  blockHash, bytes[] calldata blockHeaderRaw) bool` : Validates block headers stored in an array; EIP 1559 or later is supported.
 5. `verifyRawTx(bytes memory transaction, bytes[] calldata txRaw) bool` : Validates a transaction stored in the array.
 
