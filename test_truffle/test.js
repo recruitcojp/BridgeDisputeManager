@@ -1,20 +1,14 @@
-const { expect, assert } = require("chai");
-const { ethers } = require("hardhat");
-const { expectRevert } = require('@openzeppelin/test-helpers');
-
-const rlp = require('rlp');
-
-/*const BridgeDisputeManager = artifacts.require("BridgeDisputeManager");
+const BridgeDisputeManager = artifacts.require("BridgeDisputeManager");
 const DisputeHelper = artifacts.require("DisputeHelper");
 const TestToken = artifacts.require("TestToken");
 const TestCheckPointManager = artifacts.require("TestCheckPointManager");
 const RLPDecoder = artifacts.require("RLPDecoder");
-const decoderHelper = artifacts.require("DecoderHelper");*/
-//const Web3 = require('web3');
-//const rlp = require('rlp');
-//const HDWalletProvider = require("@truffle/hdwallet-provider");
-/*const dotenv = require('dotenv');
-dotenv.config();*/
+const decoderHelper = artifacts.require("DecoderHelper");
+const Web3 = require('web3');
+const rlp = require('rlp');
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const dotenv = require('dotenv');
+dotenv.config();
 
 /*
  * uncomment accounts to access the test accounts made available by the
@@ -22,65 +16,30 @@ dotenv.config();*/
  * See docs: https://www.trufflesuite.com/docs/truffle/testing/writing-tests-in-javascript
  */
 
-describe("BridgeDisputeManager", function (/* accounts */) {
+contract("BridgeDisputeManager", function (/* accounts */) {
 
-  let RLPDecoder;
-  let rlpDecoder;
-  let DecoderHelper;
-  let decoderHelper;
-  let TestToken;
-  let testToken;
-  let TestCheckPointManager;
-  let testCheckPointManager;
-
-  let BridgeDisputeManager;
   let bridgeDisputeManager;
+  let testCheckPointManager;
+  let testToken;
   let accounts;
-  let DisputeHelper;
+  let txParams;
+  let helper;
   let disputeHelper;
+  let rlpDecoder;
 
-  //const web3 = new Web3('http://localhost:8545');    
+  const web3 = new Web3('http://localhost:8545');    
 
   before(async () => {
-    accounts =  await ethers.getSigners();
-    RLPDecoder = await hre.ethers.getContractFactory("RLPDecoder");
-    rlpDecoder = await RLPDecoder.deploy();
-    DecoderHelper = await hre.ethers.getContractFactory("DecoderHelper", {
-      libraries: {
-        RLPDecoder: rlpDecoder.address,
-      },
-    });
-    decoderHelper = await DecoderHelper.deploy();
-    TestToken = await hre.ethers.getContractFactory("TestToken");
-    TestCheckPointManager = await hre.ethers.getContractFactory("TestCheckPointManager");
-    testCheckPointManager = await TestCheckPointManager.deploy();
-    //rlpDecoder = await decoderHelper.deployed();
-    //accounts = await web3.eth.getAccounts();
-    //txParams = { from: accounts[0] };
-    //testToken = await TestToken.new(accounts[0], txParams);
-    //testCheckPointManager = await TestCheckPointManager.new();
+    rlpDecoder = await decoderHelper.deployed();
+    accounts = await web3.eth.getAccounts();
+    txParams = { from: accounts[0] };
+    testToken = await TestToken.new(accounts[0], txParams);
+    testCheckPointManager = await TestCheckPointManager.new();
   });
 
   beforeEach(async () => {
-    testToken = await TestToken.connect(accounts[0]).deploy(accounts[0].address);
-
-    const BridgeDisputeManager = await hre.ethers.getContractFactory("BridgeDisputeManager", {
-      libraries: {
-        RLPDecoder: rlpDecoder.address,
-      },
-    });
-
-    const DisputeHelper = await hre.ethers.getContractFactory("DisputeHelper", {
-      libraries: {
-        RLPDecoder: rlpDecoder.address,
-      },
-    });
-
-    bridgeDisputeManager = await BridgeDisputeManager.connect(accounts[0]).deploy(testCheckPointManager.address);
-    disputeHelper = await DisputeHelper.connect(accounts[0]).deploy(testCheckPointManager.address);
-
-    /*bridgeDisputeManager = await BridgeDisputeManager.new(testCheckPointManager.address, txParams);
-    disputeHelper = await DisputeHelper.new(testCheckPointManager.address, txParams);*/
+    bridgeDisputeManager = await BridgeDisputeManager.new(testCheckPointManager.address, txParams);
+    disputeHelper = await DisputeHelper.new(testCheckPointManager.address, txParams);
   });
   it("verifyBlockHeader", async function () {
     const blockHash = "0xd792952703adf456f92a4298f396da0fc5f771afd2082b46c9c5b2118e10db1c";
@@ -178,10 +137,8 @@ describe("BridgeDisputeManager", function (/* accounts */) {
       const result = await bridgeDisputeManager.verifyProof(txHash, proof, txRoot, path);
       assert.fail();
     }catch(e) {
-      const expect = 'VM Exception while processing transaction: reverted with reason string "Invalid Tx Root"';
-      assert.include(e.message,  expect);
+      assert.equal(e.message, "Returned error: VM Exception while processing transaction: revert Invalid Tx Root");
     }
-   
 
   });
 
@@ -193,7 +150,7 @@ describe("BridgeDisputeManager", function (/* accounts */) {
       '0x06',
       '0x59682f00',
       '0x59682f0a',
-      '0x012da1',
+      '0x12da1',
       '0x499d11E0b6eAC7c0593d8Fb292DCBbF815Fb29Ae',
       '0x',
       '0xa9059cbb000000000000000000000000578d9b2d04bc99007b941787e88e4ea57d888a560000000000000000000000000000000000000000000000000de0b6b3a7640000',
@@ -236,7 +193,7 @@ describe("BridgeDisputeManager", function (/* accounts */) {
       '0x06',
       '0x59682f00',
       '0x59682f0a',
-      '0x012da1',
+      '0x12da1',
       '0x499d11E0b6eAC7c0593d8Fb292DCBbF815Fb29Ae',
       '0x',
       '0xa9059cbb000000000000000000000000578d9b2d04bc99007b941787e88e4ea57d888a560000000000000000000000000000000000000000000000000de0b6b3a7640000',
@@ -256,11 +213,11 @@ describe("BridgeDisputeManager", function (/* accounts */) {
   it("verifyBlockHash", async function () {
     const blockHash = "0xd858caa161bde78ebc8a8fe12adae6ecf7f0bcb8b1547b992215bf13fdbe17f9";
     const blockNumber = 5858981;
-    await testCheckPointManager.connect(accounts[0]).setBlockHash(blockNumber, blockHash);
+    await testCheckPointManager.setBlockHash(blockNumber, blockHash, {from:accounts[0]});
     const blockHashResult = await testCheckPointManager.getBlockHash(blockNumber);
 
     assert.equal(blockHashResult, blockHash)
-    const result = await bridgeDisputeManager.verifyBlockHash(blockHash, blockNumber);
+    const result = await bridgeDisputeManager.verifyBlockHash.call(blockHash, blockNumber);
     assert.isTrue(result);
   });
 
@@ -283,7 +240,7 @@ describe("BridgeDisputeManager", function (/* accounts */) {
 
     const transaction = '0x02f8700580847029fd38847029fd4282520894b0e426b1a0b8ba474dc5c8f6493b3e63d7121626865af3107a400080c080a0e652f92895753c04e12dec82396722de717cb6e23311b09848c3f8e7f6ec712ca06c9fa23e04fa2a05509fd426d0e4a64e96278af74034bae52f3bef7af1cb6e83'
 
-    const result = await bridgeDisputeManager.verifyRawTx(transaction, rawTx);
+    const result = await bridgeDisputeManager.verifyRawTx.call(transaction, rawTx);
     assert.isTrue(result);
   });
 
@@ -305,25 +262,25 @@ describe("BridgeDisputeManager", function (/* accounts */) {
 
     const transaction = '0x02f87305820295849502f900849502f90e82791894e202b444db397f53ae05149fe2843d7841a2dcbe871f38a3b249400080c080a027094150a21e8d9485c58d1459254e334e8482c3dea46c8ef28aedada3e53c07a01bf9d6673eac1cc5a956070a6a38c954f07867d611964d49cc42940034cd103f'
 
-    const result = await bridgeDisputeManager.verifyRawTx(transaction, rawTx);
+    const result = await bridgeDisputeManager.verifyRawTx.call(transaction, rawTx);
     assert.isNotTrue(result);
   });
 
   it("first byte < 0x7f, return byte itself", async function () {
-    const decoded = await decoderHelper.decode('0x61');
+    const decoded = await rlpDecoder.decode('0x61');
     assert.equal(4, decoded[0].length)
     assert.equal(decoded[0], '0x61')
   });
 
   it("first byte < 0xb7, data is everything except first byte", async function () {
-    const decoded = await decoderHelper.decode('0x83646f67');
+    const decoded = await rlpDecoder.decode('0x83646f67');
     assert.equal(8, decoded[0].length)
     assert.equal(decoded[0], '0x646f67')
   });
 
 
   it("first byte == 0x80, data is null", async function () {
-    const decoded = await decoderHelper.decode('0x80');
+    const decoded = await rlpDecoder.decode('0x80');
     assert.equal(decoded[0], '0x')
   });
 
@@ -334,7 +291,7 @@ describe("BridgeDisputeManager", function (/* accounts */) {
     const encoded = rlp.encode(testBuffer)
     //console.log(testBuffer.toString('hex'));
     const encodedHex = "0x" + Buffer.from(new Uint8Array(encoded)).toString("hex")
-    const decoded = await decoderHelper.decode(encodedHex);
+    const decoded = await rlpDecoder.decode(encodedHex);
     assert.equal(Buffer.from(decoded[0].slice(2), 'hex').toString(), testString)
   })
 
@@ -348,7 +305,7 @@ describe("BridgeDisputeManager", function (/* accounts */) {
     ]
     const encoded = rlp.encode(list)
     const encodedHex = "0x" + Buffer.from(new Uint8Array(encoded)).toString("hex")
-    const decoded = await decoderHelper.decode(encodedHex);
+    const decoded = await rlpDecoder.decode(encodedHex);
     assert.deepEqual(decoded, ['0x54686973',"0x546869732066756e6374696f6e2074616b657320696e206120646174612c20636f6e7665727420697420746f20627566666572206966206e6f742c20616e642061206c656e67746820666f7220726563757273696f6e", '0x07', '0x05','0x']);
   })
 
@@ -357,7 +314,7 @@ describe("BridgeDisputeManager", function (/* accounts */) {
 
     const encoded = rlp.encode(list)
     const encodedHex = "0x" + Buffer.from(new Uint8Array(encoded)).toString("hex")
-    const decoded = await decoderHelper.decode(encodedHex);
+    const decoded = await rlpDecoder.decode(encodedHex);
     
     const decodedBuffer = rlp.decode(encoded)
     let rlpdecoded = []
@@ -374,7 +331,8 @@ describe("BridgeDisputeManager", function (/* accounts */) {
 
     const encoded = Buffer.from(string.slice(2), 'hex');
     const decodedBuffer = rlp.decode(encoded)
-    const decoded = await decoderHelper.decode(string);
+    const estimate = await rlpDecoder.decode.estimateGas(string);
+    const decoded = await rlpDecoder.decode(string);
     let rlpdecoded = []
     for(let i = 0; i < decodedBuffer.length ;i++) {
       rlpdecoded[i] = "0x" + decodedBuffer[i].toString('hex');
