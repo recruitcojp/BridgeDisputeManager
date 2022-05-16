@@ -39,8 +39,6 @@ describe("BridgeDisputeManager", function (/* accounts */) {
   let DisputeHelper;
   let disputeHelper;
 
-  //const web3 = new Web3('http://localhost:8545');    
-
   before(async () => {
     accounts =  await ethers.getSigners();
     RLPDecoder = await hre.ethers.getContractFactory("RLPDecoder");
@@ -54,11 +52,6 @@ describe("BridgeDisputeManager", function (/* accounts */) {
     TestToken = await hre.ethers.getContractFactory("TestToken");
     TestCheckPointManager = await hre.ethers.getContractFactory("TestCheckPointManager");
     testCheckPointManager = await TestCheckPointManager.deploy();
-    //rlpDecoder = await decoderHelper.deployed();
-    //accounts = await web3.eth.getAccounts();
-    //txParams = { from: accounts[0] };
-    //testToken = await TestToken.new(accounts[0], txParams);
-    //testCheckPointManager = await TestCheckPointManager.new();
   });
 
   beforeEach(async () => {
@@ -79,8 +72,6 @@ describe("BridgeDisputeManager", function (/* accounts */) {
     bridgeDisputeManager = await BridgeDisputeManager.connect(accounts[0]).deploy(testCheckPointManager.address);
     disputeHelper = await DisputeHelper.connect(accounts[0]).deploy(testCheckPointManager.address);
 
-    /*bridgeDisputeManager = await BridgeDisputeManager.new(testCheckPointManager.address, txParams);
-    disputeHelper = await DisputeHelper.new(testCheckPointManager.address, txParams);*/
   });
   it("verifyBlockHeader", async function () {
     const blockHash = "0xd792952703adf456f92a4298f396da0fc5f771afd2082b46c9c5b2118e10db1c";
@@ -174,14 +165,10 @@ describe("BridgeDisputeManager", function (/* accounts */) {
   ];
     const txRoot = "0xf94fdd74f197425dda1eeef534497f407158d845cac9092a5b7fea9681dbb239"; //wrong root
     const path = [ 1, 13 ];
-    try {
-      const result = await bridgeDisputeManager.verifyProof(txHash, proof, txRoot, path);
-      assert.fail();
-    }catch(e) {
-      const expect = 'VM Exception while processing transaction: reverted with reason string "Invalid Tx Root"';
-      assert.include(e.message,  expect);
-    }
-   
+
+    await expect(
+      bridgeDisputeManager.verifyProof(txHash, proof, txRoot, path)
+    ).to.be.revertedWith("Invalid Tx Root");
 
   });
 
