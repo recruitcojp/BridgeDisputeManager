@@ -14,6 +14,9 @@ contract BridgeDisputeManager {
   CheckPointManagerInterface internal checkPointManager;
   bytes constant TX_TYPE2 = hex"02";
   uint constant ACCESSLIST = 8;
+  uint256 constant TRANSACTION_TO_INDEX = 5;
+  uint256 constant TRANSACTION_VALUE_INDEX = 6;
+
 
   function verifyBlockHeader(bytes32  blockHash, bytes[] calldata blockHeaderRaw) public pure returns (bool){
       return blockHash == keccak256(rlpEncode(blockHeaderRaw, false));
@@ -176,6 +179,40 @@ contract BridgeDisputeManager {
           nibbles[q] = uint8(tmp >> 4);
       }
       return nibbles;
+  }
+
+  function checkTransferTx(
+      bytes calldata transaction,
+      address recipient,
+      uint256 amount
+  ) public pure returns (bool) {
+      bytes[] memory decodedTx = decodeNode(transaction[1:]);
+      bytes memory value = decodedTx[TRANSACTION_VALUE_INDEX];
+      bytes memory to = decodedTx[TRANSACTION_TO_INDEX];
+      bytes memory prefix = new bytes(32 - value.length);
+      return toAddress(to, 0) == recipient && toUint256(bytes.concat(prefix, value), 0) >= amount;
+  }
+
+  function toUint256(bytes memory _bytes, uint256 _start) internal pure returns (uint256) {
+      require(_bytes.length >= _start + 32, "toUint256_outOfBounds");
+      uint256 tempUint;
+
+      assembly {
+          tempUint := mload(add(add(_bytes, 0x20), _start))
+      }
+
+      return tempUint;
+  }
+
+  function toAddress(bytes memory _bytes, uint256 _start) internal pure returns (address) {
+      require(_bytes.length >= _start + 20, "toAddress_outOfBounds");
+      address tempAddress;
+
+      assembly {
+          tempAddress := div(mload(add(add(_bytes, 0x20), _start)), 0x1000000000000000000000000)
+      }
+
+      return tempAddress;
   }
 
   function decodeNode(bytes memory item) public pure returns (bytes[] memory ){
