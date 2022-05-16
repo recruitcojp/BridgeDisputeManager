@@ -1,6 +1,8 @@
 const { expect, assert } = require("chai");
 const { ethers } = require("hardhat");
 const { expectRevert } = require('@openzeppelin/test-helpers');
+const utils = require('./utils.js');
+const TestData = utils.TestData;
 
 const rlp = require('rlp');
 
@@ -72,6 +74,7 @@ describe("BridgeDisputeManager", function (/* accounts */) {
     bridgeDisputeManager = await BridgeDisputeManager.connect(accounts[0]).deploy(testCheckPointManager.address);
     disputeHelper = await DisputeHelper.connect(accounts[0]).deploy(testCheckPointManager.address);
 
+    testData = new TestData(accounts, disputeHelper);
   });
   it("verifyBlockHeader", async function () {
     const blockHash = "0xd792952703adf456f92a4298f396da0fc5f771afd2082b46c9c5b2118e10db1c";
@@ -294,6 +297,30 @@ describe("BridgeDisputeManager", function (/* accounts */) {
 
     const result = await bridgeDisputeManager.verifyRawTx(transaction, rawTx);
     assert.isNotTrue(result);
+  });
+
+  it("checkTransferTx", async function () {
+
+    const testTx = testData.getTransferTxData(0);
+    let result = await disputeHelper.checkTransferTx(testTx.transaction, testTx.to, testTx.amount);
+    assert.equal(result, true)
+
+  });
+
+  it("checkTransferTx, invalid to", async function () {
+
+    const testTx = testData.getTransferTxData(1);
+    let result = await disputeHelper.checkTransferTx(testTx.transaction, testTx.to, testTx.amount);
+    assert.equal(result, false)
+
+  });
+
+  it("checkTransferTx, invalid amount", async function () {
+
+    const testTx = testData.getTransferTxData(2);
+    let result = await disputeHelper.checkTransferTx(testTx.transaction, testTx.to, testTx.amount);
+    assert.equal(result, false)
+
   });
 
   it("first byte < 0x7f, return byte itself", async function () {
