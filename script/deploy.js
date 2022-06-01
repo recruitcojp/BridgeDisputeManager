@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 const utils = require('./utils')
+const childCheckPointManagerAbi = require('../abi/PolygonChildCheckPointManager.json')
 const mainContractPath = "../v1-contracts/";
 
 
@@ -11,13 +12,18 @@ async function main() {
   let polygonChildCheckPointManagerAddress = "";
 
   if(hre.network.name == "localhost") {
-
     const TestCheckPointManager = await hre.ethers.getContractFactory("TestCheckPointManager");
     const testCheckPointManager = await TestCheckPointManager.deploy();
     polygonChildCheckPointManagerAddress = testCheckPointManager.address;
 
   } else if(hre.network.name == "mumbai" || hre.network.name == "polygon") {
     polygonChildCheckPointManagerAddress = mainContractAddressObj[hre.network.name].PolygonChildCheckPointManager
+    const polygonChildCheckPointManager = await hre.ethers.getContractAt(childCheckPointManagerAbi, polygonChildCheckPointManagerAddress);
+    const rootTunnel = await polygonChildCheckPointManager.fxRootTunnel();
+    if(rootTunnel == "0x0000000000000000000000000000000000000000") {
+      console.log("CheckPointManager doesn't inilialize!! Set tunnels first!");
+      return; 
+    }
   }
 
   const RLPDecoder = await hre.ethers.getContractFactory("RLPDecoder");
