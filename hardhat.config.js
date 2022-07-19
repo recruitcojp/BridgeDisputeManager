@@ -25,6 +25,12 @@ module.exports = {
       url: 'http://127.0.0.1:8545',
     },
     hardhat: {},
+    polygon: {
+      url: process.env.PROVIDER_POLYGON,
+      accounts: {mnemonic: process.env.MNEMONIC},
+      gasPrice: 800000000000,
+      chainId: 137,
+    },
     mumbai: {
       url: process.env.PROVIDER_MUMBAI || 'https://rpc-mumbai.matic.today',
       chainId: 80001,

@@ -3,7 +3,6 @@ const utils = require('./utils')
 const childCheckPointManagerAbi = require('../abi/PolygonChildCheckPointManager.json')
 const mainContractPath = "../v1-contracts/";
 
-
 async function main() {
   let contractAddressObj = utils.getContractAddresses()
   let mainContractAddressObj = utils.getContractAddresses(mainContractPath)
@@ -26,11 +25,12 @@ async function main() {
     }
   }
 
-  const RLPDecoder = await hre.ethers.getContractFactory("RLPDecoder");
+  //const RLPDecoder = await hre.ethers.getContractFactory("RLPDecoder");
+  const RLPDecoder = await hre.ethers.getContractFactory("SolRLPDecoder");
   const rlpDecoder = await RLPDecoder.deploy();
   const BridgeDisputeManager = await hre.ethers.getContractFactory("BridgeDisputeManager", {
     libraries: {
-      RLPDecoder: rlpDecoder.address,
+      SolRLPDecoder: rlpDecoder.address,
     },
   });
 

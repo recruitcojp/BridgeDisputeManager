@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity <0.9.0;
 pragma experimental ABIEncoderV2;
-import "solidity-rlp/contracts/RLPReader.sol";
+//import "solidity-rlp/contracts/RLPReader.sol";
+import "./RLPReader.sol";
 
 library SolRLPDecoder {
     using RLPReader for RLPReader.RLPItem;
