@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
-import {RLPDecoder} from "./RLPDecoder.sol";
+import {SolRLPDecoder} from "./SolRLPDecoder.sol";
 
 interface CheckPointManagerInterface{
   function getBlockHash(uint _blockNumber) external view returns(bytes32);
@@ -216,7 +216,7 @@ contract BridgeDisputeManager {
   }
 
   function decodeNode(bytes memory item) public pure returns (bytes[] memory ){
-      return RLPDecoder.decode(item);
+      return SolRLPDecoder.decode(item);
   }
 
 }

@@ -29,11 +29,11 @@ describe('BridgeDisputeManager', function (/* accounts */) {
 
   before(async () => {
     accounts = await ethers.getSigners();
-    RLPDecoder = await hre.ethers.getContractFactory('RLPDecoder');
+    RLPDecoder = await hre.ethers.getContractFactory('SolRLPDecoder');
     rlpDecoder = await RLPDecoder.deploy();
     DecoderHelper = await hre.ethers.getContractFactory('DecoderHelper', {
       libraries: {
-        RLPDecoder: rlpDecoder.address,
+        SolRLPDecoder: rlpDecoder.address,
       },
     });
     decoderHelper = await DecoderHelper.deploy();
@@ -53,14 +53,14 @@ describe('BridgeDisputeManager', function (/* accounts */) {
       'BridgeDisputeManager',
       {
         libraries: {
-          RLPDecoder: rlpDecoder.address,
+          SolRLPDecoder: rlpDecoder.address,
         },
       },
     );
 
     const DisputeHelper = await hre.ethers.getContractFactory('DisputeHelper', {
       libraries: {
-        RLPDecoder: rlpDecoder.address,
+        SolRLPDecoder: rlpDecoder.address,
       },
     });
 
@@ -262,7 +262,7 @@ describe('RLPDecoder', function (/* accounts */) {
     rlpDecoder = await RLPDecoder.deploy();
     DecoderHelper = await hre.ethers.getContractFactory('DecoderHelper', {
       libraries: {
-        RLPDecoder: rlpDecoder.address,
+        SolRLPDecoder: rlpDecoder.address,
       },
     });
     decoderHelper = await DecoderHelper.deploy();
