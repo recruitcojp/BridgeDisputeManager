@@ -26,7 +26,8 @@
     "@openzeppelin/test-helpers": "^0.5.15",
     "@truffle/hdwallet-provider": "^2.0.4",
     "dotenv": "^16.0.0",
-    "solidity-rlp": "^2.0.5"
+    "solidity-rlp": "^2.0.5",
+    "web3": "^1.7.5"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",

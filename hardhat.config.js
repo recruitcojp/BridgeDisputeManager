@@ -28,13 +28,13 @@ module.exports = {
     polygon: {
       url: process.env.PROVIDER_POLYGON,
       accounts: {mnemonic: process.env.MNEMONIC},
-      gasPrice: 800000000000,
+      //gasPrice: 800000000000,
       chainId: 137,
     },
     mumbai: {
       url: process.env.PROVIDER_MUMBAI || 'https://rpc-mumbai.matic.today',
       chainId: 80001,
-      gasPrice: 10000000000,
+      //gasPrice: 10000000000,
       accounts: {
         mnemonic:
           process.env.MNEMONIC ||
