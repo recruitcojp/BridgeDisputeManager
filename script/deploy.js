@@ -1,27 +1,33 @@
 const hre = require("hardhat");
 const utils = require('./utils')
 const childCheckPointManagerAbi = require('../abi/PolygonChildCheckPointManager.json')
-const mainContractPath = "../v1-contracts/";
+const mainContractPath = "../v1-contracts-polygon/";
 
 async function main() {
   let contractAddressObj = utils.getContractAddresses()
   let mainContractAddressObj = utils.getContractAddresses(mainContractPath)
-  const accounts =  await ethers.getSigners();
+  const accounts = await ethers.getSigners();
   console.log("Network name =", hre.network.name);
   let polygonChildCheckPointManagerAddress = "";
+  let provider = "";
 
-  if(hre.network.name == "localhost") {
+  if (hre.network.name == "localhost") {
     const TestCheckPointManager = await hre.ethers.getContractFactory("TestCheckPointManager");
     const testCheckPointManager = await TestCheckPointManager.deploy();
     polygonChildCheckPointManagerAddress = testCheckPointManager.address;
 
-  } else if(hre.network.name == "mumbai" || hre.network.name == "polygon") {
-    polygonChildCheckPointManagerAddress = mainContractAddressObj[hre.network.name].PolygonChildCheckPointManager
+  } else if (hre.network.name == "mumbai" || hre.network.name == "polygon") {
+    polygonChildCheckPointManagerAddress = mainContractAddressObj[hre.network.name].PolygonChildCheckPointManager;
     const polygonChildCheckPointManager = await hre.ethers.getContractAt(childCheckPointManagerAbi, polygonChildCheckPointManagerAddress);
     const rootTunnel = await polygonChildCheckPointManager.fxRootTunnel();
-    if(rootTunnel == "0x0000000000000000000000000000000000000000") {
+    if (rootTunnel == "0x0000000000000000000000000000000000000000") {
       console.log("CheckPointManager doesn't inilialize!! Set tunnels first!");
-      return; 
+      return;
+    }
+    if (hre.network.name == "mumbai") {
+      provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_MUMBAI);
+    } else if (hre.network.name == "polygon") {
+      provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_POLYGON);
     }
   }
 
@@ -34,7 +40,9 @@ async function main() {
     },
   });
 
-  const bridgeDisputeManager = await BridgeDisputeManager.connect(accounts[0]).deploy(polygonChildCheckPointManagerAddress);
+  const price = await provider.getGasPrice();
+  console.log("gas price: ", price);
+  const bridgeDisputeManager = await BridgeDisputeManager.connect(accounts[0]).deploy(polygonChildCheckPointManagerAddress, { gasPrice: price });
   console.log("BridgeDisputeManager address:", bridgeDisputeManager.address);
 
   contractAddressObj[hre.network.name].BridgeDisputeManager = bridgeDisputeManager.address;
